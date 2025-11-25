@@ -375,6 +375,7 @@ export default function App() {
               src="https://images.unsplash.com/photo-1616683693504-3ea7e9ad6fec?auto=format&fit=crop&w=1600&q=80" 
               className="w-full h-full object-cover"
               alt="Banner"
+              loading="lazy"
             />
             <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent flex items-center">
               <div className="max-w-7xl mx-auto px-4 w-full">
@@ -444,6 +445,7 @@ export default function App() {
                       src={product.image} 
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                       alt={product.name}
+                      loading="lazy"
                     />
                   </div>
 
@@ -538,7 +540,7 @@ export default function App() {
           <div className="grid md:grid-cols-12 gap-10">
             <div className="md:col-span-7">
               <div className="aspect-[4/4] md:aspect-[4/3] rounded-sm overflow-hidden bg-gray-50 border border-gray-100 relative group">
-                 <img src={selectedProduct.image} className="w-full h-full object-cover" alt={selectedProduct.name}/>
+                 <img loading="lazy" src={selectedProduct.image} className="w-full h-full object-cover" alt={selectedProduct.name}/>
                  {selectedProduct.discount > 0 && (
                     <div className="absolute top-0 left-0 bg-[#E91E63] text-white p-4 z-10">
                       <p className="text-2xl font-black leading-none">-{selectedProduct.discount}%</p>
@@ -757,7 +759,7 @@ export default function App() {
                 {cart.map(item => (
                   <div key={item.id} className="flex gap-3 text-sm border-b border-gray-200 pb-3 last:border-0">
                     <div className="w-12 h-12 bg-white rounded border border-gray-200 overflow-hidden shrink-0">
-                      <img src={item.image} className="w-full h-full object-cover" alt={item.name}/>
+                      <img loading="lazy" src={item.image} className="w-full h-full object-cover" alt={item.name}/>
                     </div>
                     <div className="flex-1">
                       <p className="font-bold text-gray-900 line-clamp-1">{item.name}</p>
@@ -772,7 +774,7 @@ export default function App() {
                 <div className="absolute top-0 right-0 bg-[#E91E63] text-white text-[10px] font-bold px-2 py-0.5 rounded-bl">OFERTA ÚNICA</div>
                 <div className="flex items-start gap-3">
                    <div className="w-14 h-14 bg-gray-100 rounded shrink-0">
-                      <img src={ORDER_BUMP_ITEM.image} className="w-full h-full object-cover rounded" alt={ORDER_BUMP_ITEM.name}/>
+                      <img loading="lazy" src={ORDER_BUMP_ITEM.image} className="w-full h-full object-cover rounded" alt={ORDER_BUMP_ITEM.name}/>
                    </div>
                    <div>
                       <p className="text-xs font-black text-gray-900 uppercase leading-tight mb-1">{ORDER_BUMP_ITEM.name}</p>
@@ -830,7 +832,7 @@ export default function App() {
             cart.map(item => (
               <div key={item.id} className="flex gap-4 animate-fade-in">
                 <div className="w-20 h-20 bg-gray-100 rounded-md overflow-hidden flex-shrink-0 border border-gray-200">
-                  <img src={item.image} className="w-full h-full object-cover" alt={item.name}/>
+                  <img loading="lazy" src={item.image} className="w-full h-full object-cover" alt={item.name}/>
                 </div>
                 <div className="flex-1 flex flex-col justify-between">
                   <div><h4 className="text-sm font-bold text-gray-900 line-clamp-2">{item.name}</h4><p className="text-xs text-gray-500 mt-1">{formatPrice(item.price)} un.</p></div>
