@@ -3,7 +3,7 @@ import {
   ShoppingBag, Search, Menu, X, User, Heart, Star, 
   ChevronRight, ChevronLeft, Truck, CreditCard, ShieldCheck, 
   ArrowRight, Plus, Minus, Trash2, CheckCircle, MapPin,
-  Clock, ThumbsUp, ChevronDown, Frown, Gift
+  Clock, ThumbsUp, ChevronDown, Frown, Gift, Zap
 } from 'lucide-react';
 
 // --- IMPORTAÇÕES DO FIREBASE ---
@@ -375,7 +375,7 @@ export default function App() {
               src="https://images.unsplash.com/photo-1616683693504-3ea7e9ad6fec?auto=format&fit=crop&w=1600&q=80" 
               className="w-full h-full object-cover"
               alt="Banner"
-              loading="lazy"
+              loading="eager"
             />
             <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent flex items-center">
               <div className="max-w-7xl mx-auto px-4 w-full">
@@ -445,7 +445,7 @@ export default function App() {
                       src={product.image} 
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                       alt={product.name}
-                      loading="lazy"
+                      loading="lazy" /* OTIMIZAÇÃO DE PERFORMANCE */
                     />
                   </div>
 
@@ -492,8 +492,8 @@ export default function App() {
     const [qty, setQty] = useState(1);
     const [activeTab, setActiveTab] = useState('aval');
     const [cep, setCep] = useState('');
-    const [timeLeft, setTimeLeft] = useState({ h: 4, m: 32, s: 15 });
     const [viewerCount, setViewerCount] = useState(85);
+    const [currentStock, setCurrentStock] = useState(10000);
 
     useEffect(() => {
       const viewerInterval = setInterval(() => {
@@ -502,19 +502,36 @@ export default function App() {
       return () => clearInterval(viewerInterval);
     }, []);
 
+    // --- LÓGICA DE ESTOQUE (10.000 descendo 100 por minuto) ---
     useEffect(() => {
-      const timer = setInterval(() => {
-        setTimeLeft((prev) => {
-          if (prev.s > 0) return { ...prev, s: prev.s - 1 };
-          if (prev.m > 0) return { ...prev, m: prev.m - 1, s: 59 };
-          if (prev.h > 0) return { ...prev, h: prev.h - 1, m: 59, s: 59 };
-          return prev; 
-        });
-      }, 1000);
-      return () => clearInterval(timer);
-    }, []);
+      const calculateStock = () => {
+        const INITIAL_STOCK = 10000;
+        const DECAY_PER_MINUTE = 100;
+        // Duração do ciclo em ms (10000 / 100 = 100 minutos)
+        const CYCLE_DURATION_MS = (INITIAL_STOCK / DECAY_PER_MINUTE) * 60 * 1000; 
+        
+        const now = Date.now();
+        // Pega o tempo decorrido no ciclo atual
+        const timeInCurrentCycle = now % CYCLE_DURATION_MS;
+        const minutesPassed = timeInCurrentCycle / (60 * 1000);
+        
+        // Calcula estoque atual
+        const stock = Math.floor(INITIAL_STOCK - (minutesPassed * DECAY_PER_MINUTE));
+        
+        // Garante que não fique negativo e mantém um mínimo de "urgência" no final do ciclo
+        return Math.max(15, stock);
+      };
 
-    const formatTime = (time) => time.toString().padStart(2, '0');
+      // Define inicial
+      setCurrentStock(calculateStock());
+
+      // Atualiza a cada 2 segundos para parecer vivo, mas seguindo a matemática correta
+      const interval = setInterval(() => {
+        setCurrentStock(calculateStock());
+      }, 2000);
+
+      return () => clearInterval(interval);
+    }, []);
 
     const MOCK_REVIEWS = [
       { id: 1, initials: "DD", name: "Daniela D.", verified: true, date: "03/11/2025", rating: 5, title: "cheiro incrível, bem masculino e ótima fixação", recommend: true },
@@ -523,6 +540,9 @@ export default function App() {
     ];
 
     if (!selectedProduct) return null;
+
+    // Cálculo para barra de progresso (inverso do estoque)
+    const progressPercentage = ((10000 - currentStock) / 10000) * 100;
 
     return (
       <div className="animate-fade-in bg-white pb-20">
@@ -540,7 +560,7 @@ export default function App() {
           <div className="grid md:grid-cols-12 gap-10">
             <div className="md:col-span-7">
               <div className="aspect-[4/4] md:aspect-[4/3] rounded-sm overflow-hidden bg-gray-50 border border-gray-100 relative group">
-                 <img loading="lazy" src={selectedProduct.image} className="w-full h-full object-cover" alt={selectedProduct.name}/>
+                 <img src={selectedProduct.image} className="w-full h-full object-cover" alt={selectedProduct.name}/>
                  {selectedProduct.discount > 0 && (
                     <div className="absolute top-0 left-0 bg-[#E91E63] text-white p-4 z-10">
                       <p className="text-2xl font-black leading-none">-{selectedProduct.discount}%</p>
@@ -569,18 +589,31 @@ export default function App() {
               </div>
 
               <div className="bg-gray-50 p-6 rounded-lg border border-gray-100 mb-6 relative overflow-hidden">
-                <div className="absolute top-0 right-0 bg-[#E91E63] text-white text-xs font-bold px-3 py-1 rounded-bl-lg flex items-center gap-1 transition-all animate-pulse-slow">
-                  <Clock size={12} /> EXPIRA EM: {formatTime(timeLeft.h)}:{formatTime(timeLeft.m)}:{formatTime(timeLeft.s)}
+                {/* TARJA DE ESTOQUE SUBSTITUINDO O TIMER */}
+                <div className="absolute top-0 right-0 left-0 bg-[#E91E63] text-white text-xs font-bold px-4 py-2 flex flex-col gap-1">
+                  <div className="flex justify-between items-center">
+                    <span className="flex items-center gap-1"><Zap size={14} fill="white"/> ALTA PROCURA</span>
+                    <span>RESTAM {currentStock.toLocaleString('pt-BR')} UNIDADES</span>
+                  </div>
+                  {/* BARRA DE PROGRESSO DO ESTOQUE */}
+                  <div className="w-full h-1.5 bg-black/20 rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-white animate-pulse-slow" 
+                      style={{ width: `${(currentStock / 10000) * 100}%` }}
+                    ></div>
+                  </div>
                 </div>
 
-                <p className="text-gray-500 text-sm line-through mb-1">De: {formatPrice(selectedProduct.oldPrice)}</p>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-5xl font-black text-[#E91E63] tracking-tighter">{formatPrice(selectedProduct.price)}</span>
-                  <span className="text-sm font-bold text-green-600 bg-green-100 px-2 py-1 rounded">-{selectedProduct.discount}%</span>
+                <div className="mt-10"> {/* Espaçamento extra para compensar a tarja */}
+                  <p className="text-gray-500 text-sm line-through mb-1">De: {formatPrice(selectedProduct.oldPrice)}</p>
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-5xl font-black text-[#E91E63] tracking-tighter">{formatPrice(selectedProduct.price)}</span>
+                    <span className="text-sm font-bold text-green-600 bg-green-100 px-2 py-1 rounded">-{selectedProduct.discount}%</span>
+                  </div>
+                  <p className="text-gray-900 font-bold mt-2">
+                    em até <span className="text-black text-lg">10x de {formatPrice(selectedProduct.price / 10)}</span> sem juros
+                  </p>
                 </div>
-                <p className="text-gray-900 font-bold mt-2">
-                  em até <span className="text-black text-lg">10x de {formatPrice(selectedProduct.price / 10)}</span> sem juros
-                </p>
               </div>
 
               <div className="space-y-4 mb-8">
@@ -759,7 +792,7 @@ export default function App() {
                 {cart.map(item => (
                   <div key={item.id} className="flex gap-3 text-sm border-b border-gray-200 pb-3 last:border-0">
                     <div className="w-12 h-12 bg-white rounded border border-gray-200 overflow-hidden shrink-0">
-                      <img loading="lazy" src={item.image} className="w-full h-full object-cover" alt={item.name}/>
+                      <img src={item.image} className="w-full h-full object-cover" alt={item.name}/>
                     </div>
                     <div className="flex-1">
                       <p className="font-bold text-gray-900 line-clamp-1">{item.name}</p>
@@ -774,7 +807,7 @@ export default function App() {
                 <div className="absolute top-0 right-0 bg-[#E91E63] text-white text-[10px] font-bold px-2 py-0.5 rounded-bl">OFERTA ÚNICA</div>
                 <div className="flex items-start gap-3">
                    <div className="w-14 h-14 bg-gray-100 rounded shrink-0">
-                      <img loading="lazy" src={ORDER_BUMP_ITEM.image} className="w-full h-full object-cover rounded" alt={ORDER_BUMP_ITEM.name}/>
+                      <img src={ORDER_BUMP_ITEM.image} className="w-full h-full object-cover rounded" alt={ORDER_BUMP_ITEM.name}/>
                    </div>
                    <div>
                       <p className="text-xs font-black text-gray-900 uppercase leading-tight mb-1">{ORDER_BUMP_ITEM.name}</p>
@@ -832,7 +865,7 @@ export default function App() {
             cart.map(item => (
               <div key={item.id} className="flex gap-4 animate-fade-in">
                 <div className="w-20 h-20 bg-gray-100 rounded-md overflow-hidden flex-shrink-0 border border-gray-200">
-                  <img loading="lazy" src={item.image} className="w-full h-full object-cover" alt={item.name}/>
+                  <img src={item.image} className="w-full h-full object-cover" alt={item.name}/>
                 </div>
                 <div className="flex-1 flex flex-col justify-between">
                   <div><h4 className="text-sm font-bold text-gray-900 line-clamp-2">{item.name}</h4><p className="text-xs text-gray-500 mt-1">{formatPrice(item.price)} un.</p></div>
