@@ -50,9 +50,9 @@ const INITIAL_PRODUCTS = [
     discount: 40,
     category: "Perfumes",
     // Imagem principal local
-    image: "/product/p1.jpeg",
+    image: "/product/p1.1.jpeg",
     // Galeria com as variações
-    gallery: ["/product/p1.jpeg", "/product/p1.1.jpeg", "/product/p.1.1.1.jpeg"],
+    gallery: ["/product/p1.jpeg", "/product/p1.1.1.jpeg", "/product/p.1.1.jpeg"],
     rating: 4.7,
     reviews: 22,
     description: "Uma fragrância doce e envolvente que desperta sensações únicas. Notas de baunilha, frutas vermelhas e um toque floral delicado.",
@@ -66,9 +66,9 @@ const INITIAL_PRODUCTS = [
     discount: 56,
     category: "Skincare",
     // Imagem principal local (Note o p.2)
-    image: "/product/p.2.jpeg",
+    image: "/product/p2.jpeg",
     // Galeria
-    gallery: ["/product/p.2.jpeg", "/product/p2.1.jpeg", "/product/p2.1.1.jpeg"],
+    gallery: ["/product/p2.jpeg", "/product/p2.1.jpeg", "/product/p2.1.1.jpeg"],
     rating: 4.9,
     reviews: 850,
     description: "Revolução no skincare. Combate rugas, manchas e oleosidade com apenas 3 gotas diárias.",
@@ -98,9 +98,9 @@ const INITIAL_PRODUCTS = [
     discount: 33,
     category: "Maquiagem",
     // Imagem principal local
-    image: "/product/p4.1.1.jpeg",
+    image: "/product/p4.2.jpeg",
     // Apenas uma imagem disponível para este produto
-    gallery: ["/product/p4.1.1.jpeg"],
+    gallery: ["/product/p4.2.jpeg", "/product/p4.1.jpeg"],
     rating: 4.6,
     reviews: 2100,
     description: "Cobertura perfeita que dura 24 horas. Resistente à água e suor, com acabamento aveludado.",
@@ -113,8 +113,11 @@ const INITIAL_PRODUCTS = [
     price: 39.90,
     oldPrice: 59.90,
     discount: 33,
-    category: "Maquiagem",
-    image: "https://images.unsplash.com/photo-1571781535009-2b994dc3882c?auto=format&fit=crop&w=600&q=80",
+    category: "Maquiagem", 
+    // Imagem principal local
+    image: "/product/p5.2.jpeg",
+    // Apenas uma imagem disponível para este produto
+    gallery: ["/product/p5.2.jpeg", "/product/p5.1.jpeg"], 
     rating: 4.5,
     reviews: 560,
     description: "Cor natural e duradoura para lábios e bochechas. Não transfere e não resseca.",
@@ -126,8 +129,11 @@ const INITIAL_PRODUCTS = [
     price: 69.90,
     oldPrice: 99.90,
     discount: 30,
-    category: "Corpo",
-    image: "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?auto=format&fit=crop&w=600&q=80",
+    category: "Corpo", 
+    // Imagem principal local
+    image: "/product/p6.2.jpeg",
+    // Apenas uma imagem disponível para este produto
+    gallery: ["/product/p6.2.jpeg", "/product/p6.1.jpeg"],
     rating: 4.9,
     reviews: 3200,
     description: "Pele macia e perfumada com toque seco. Absorção rápida e hidratação profunda por 48h.",
