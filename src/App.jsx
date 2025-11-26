@@ -40,6 +40,7 @@ const db = getFirestore(app);
 const appId = 'pink-store-v1'; // Nome interno para salvar no banco
 
 // --- DADOS INICIAIS (LISTA COMPLETA DE PRODUTOS) ---
+// ⚠️ IMPORTANTE: Certifique-se de que as imagens estão na pasta 'public/product' do seu projeto.
 const INITIAL_PRODUCTS = [
   {
     id: 'prod_01',
@@ -48,7 +49,10 @@ const INITIAL_PRODUCTS = [
     oldPrice: 149.90,
     discount: 40,
     category: "Perfumes",
-    image: "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=600&q=80",
+    // Imagem principal local
+    image: "/product/p1.jpeg",
+    // Galeria com as variações
+    gallery: ["/product/p1.jpeg", "/product/p1.1.jpeg", "/product/p.1.1.1.jpeg"],
     rating: 4.7,
     reviews: 22,
     description: "Uma fragrância doce e envolvente que desperta sensações únicas. Notas de baunilha, frutas vermelhas e um toque floral delicado.",
@@ -61,7 +65,10 @@ const INITIAL_PRODUCTS = [
     oldPrice: 299.90,
     discount: 56,
     category: "Skincare",
-    image: "https://images.unsplash.com/photo-1608248597279-f99d160bfbc8?auto=format&fit=crop&w=600&q=80",
+    // Imagem principal local (Note o p.2)
+    image: "/product/p.2.jpeg",
+    // Galeria
+    gallery: ["/product/p.2.jpeg", "/product/p2.1.jpeg", "/product/p2.1.1.jpeg"],
     rating: 4.9,
     reviews: 850,
     description: "Revolução no skincare. Combate rugas, manchas e oleosidade com apenas 3 gotas diárias.",
@@ -74,7 +81,10 @@ const INITIAL_PRODUCTS = [
     oldPrice: 359.90,
     discount: 45,
     category: "Cabelos",
-    image: "https://images.unsplash.com/photo-1526947425960-945c6e72858f?auto=format&fit=crop&w=600&q=80",
+    // Imagem principal local
+    image: "/product/p3.jpeg",
+    // Galeria
+    gallery: ["/product/p3.jpeg", "/product/p3.1.jpeg", "/product/p3.1.1.jpeg"],
     rating: 4.7,
     reviews: 432,
     description: "O trio perfeito para hidratação, nutrição e reconstrução. Recupere a saúde dos fios em 4 semanas.",
@@ -87,12 +97,16 @@ const INITIAL_PRODUCTS = [
     oldPrice: 89.90,
     discount: 33,
     category: "Maquiagem",
-    image: "https://images.unsplash.com/photo-1631729371254-42c2892f0e6e?auto=format&fit=crop&w=600&q=80",
+    // Imagem principal local
+    image: "/product/p4.1.1.jpeg",
+    // Apenas uma imagem disponível para este produto
+    gallery: ["/product/p4.1.1.jpeg"],
     rating: 4.6,
     reviews: 2100,
     description: "Cobertura perfeita que dura 24 horas. Resistente à água e suor, com acabamento aveludado.",
     sku: "BASE-MAT-04"
   },
+  // --- Produtos 5 a 8 mantêm as imagens antigas pois não foram fornecidos arquivos ---
   {
     id: 'prod_05',
     name: "Lip Tint Vermelho Cereja",
@@ -494,6 +508,14 @@ export default function App() {
     const [cep, setCep] = useState('');
     const [viewerCount, setViewerCount] = useState(85);
     const [currentStock, setCurrentStock] = useState(10000);
+    
+    // NOVO: Estado para a imagem em destaque (para a galeria)
+    const [displayImage, setDisplayImage] = useState(selectedProduct?.image);
+
+    // Atualiza a imagem em destaque quando o produto mudar
+    useEffect(() => {
+        if(selectedProduct) setDisplayImage(selectedProduct.image);
+    }, [selectedProduct]);
 
     useEffect(() => {
       const viewerInterval = setInterval(() => {
@@ -541,9 +563,6 @@ export default function App() {
 
     if (!selectedProduct) return null;
 
-    // Cálculo para barra de progresso (inverso do estoque)
-    const progressPercentage = ((10000 - currentStock) / 10000) * 100;
-
     return (
       <div className="animate-fade-in bg-white pb-20">
         <div className="border-b border-gray-100">
@@ -560,7 +579,9 @@ export default function App() {
           <div className="grid md:grid-cols-12 gap-10">
             <div className="md:col-span-7">
               <div className="aspect-[4/4] md:aspect-[4/3] rounded-sm overflow-hidden bg-gray-50 border border-gray-100 relative group">
-                 <img src={selectedProduct.image} className="w-full h-full object-cover" alt={selectedProduct.name}/>
+                 {/* Exibe a imagem selecionada (da galeria ou padrão) */}
+                 <img src={displayImage} className="w-full h-full object-cover transition-opacity duration-300" alt={selectedProduct.name}/>
+                 
                  {selectedProduct.discount > 0 && (
                     <div className="absolute top-0 left-0 bg-[#E91E63] text-white p-4 z-10">
                       <p className="text-2xl font-black leading-none">-{selectedProduct.discount}%</p>
@@ -569,6 +590,21 @@ export default function App() {
                  )}
                  <button className="absolute top-4 right-4 p-3 bg-white rounded-full shadow-md hover:text-[#E91E63] transition-colors"><Heart size={20} /></button>
               </div>
+
+              {/* GALERIA DE FOTOS (NOVO) */}
+              {selectedProduct.gallery && selectedProduct.gallery.length > 1 && (
+                  <div className="flex gap-3 mt-4 overflow-x-auto pb-2 scrollbar-hide">
+                      {selectedProduct.gallery.map((img, index) => (
+                          <button 
+                            key={index}
+                            onClick={() => setDisplayImage(img)}
+                            className={`w-20 h-20 shrink-0 border-2 rounded-md overflow-hidden ${displayImage === img ? 'border-[#E91E63]' : 'border-transparent hover:border-gray-300'}`}
+                          >
+                              <img src={img} className="w-full h-full object-cover" alt={`view ${index}`}/>
+                          </button>
+                      ))}
+                  </div>
+              )}
             </div>
 
             <div className="md:col-span-5 flex flex-col">
