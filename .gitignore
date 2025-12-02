@@ -22,3 +22,30 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# ===========================
+# Dependências e builds
+# ===========================
+node_modules
+dist
+build
+
+# Caso tenha pasta de build do backend
+backend/node_modules
+backend/dist
+backend/build
+
+# ===========================
+# Arquivos de ambiente (NUNCA subir)
+# ===========================
+.env
+*.env
+backend/.env
+
+# ===========================
+# Arquivos do editor / sistema
+# ===========================
+.vscode
+.DS_Store
+Thumbs.db
+
