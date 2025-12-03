@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './App.jsx';
+import App from './src/App.jsx';
 import './index.css';
 
 // Cria o ponto de entrada da aplicação e rende o componente App dentro da div#root
