@@ -101,9 +101,12 @@ export default function App() {
           clearInterval(interval);
         }
 } catch (error) {
-  console.error('❌ Erro em handlePaymentProcess:', error);
-  alert('Erro ao processar pagamento. Veja o console para mais detalhes.');
-  setPaymentStatus('error');
+  const response = await fetch("/api/checkout", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(payload),
+});
+
 }
     }, 5000);
 

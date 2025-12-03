@@ -1,0 +1,22 @@
+{
+	"folders": [
+		{
+			"path": "../pink-store-main/.git"
+		},
+		{
+			"path": "../pink-store-main/backend"
+		},
+		{
+			"path": "../pink-store-main/node_modules"
+		},
+		{
+			"path": "../pink-store-main/product"
+		},
+		{
+			"path": "../pink-store-main/public"
+		},
+		{
+			"path": "../pink-store-main/src"
+		}
+	]
+}
