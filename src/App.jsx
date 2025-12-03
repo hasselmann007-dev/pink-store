@@ -72,7 +72,14 @@ export default function App() {
     if (paymentStatus !== 'pix' || !transactionId) return;
 
     const API_BASE_URL =
-      import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000';
+     response = fetch("/api/checkout", {
+     method: "POST",
+     headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify(payload), // cart, customer etc
+});
+
 
     const interval = setInterval(async () => {
       try {
@@ -231,8 +238,9 @@ const finalTotal = cartSubTotal + shippingCost;
     try {
       setPaymentStatus('processing');
 
-      const API_BASE_URL =
-        import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000';
+      const API_URL = import.meta.env.VITE_API_URL || "";
+      const response = await fetch(`${API_URL}/api/checkout`, { ... });
+
 
       // -------------------------------
       // Monta o payload que vai pro backend
