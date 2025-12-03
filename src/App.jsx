@@ -238,8 +238,19 @@ const finalTotal = cartSubTotal + shippingCost;
     try {
       setPaymentStatus('processing');
 
-      const API_URL = import.meta.env.VITE_API_URL || "";
-      const response = await fetch(`${API_URL}/api/checkout`, { ... });
+      // de preferência deixe isso DENTRO da função handlePaymentProcess
+// ou use o que você já tinha de cart/customer/etc.
+const API_URL = import.meta.env.VITE_API_URL || "";
+
+const response = await fetch(`${API_URL}/api/checkout`, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify(payload),
+});
+
+
 
 
       // -------------------------------
